@@ -63,7 +63,7 @@ with DAG(
         task_id="ingest_data",
         name="ingest-car-crash-job",
         namespace="airflow",
-        image="jaihind213/daily_pipeline_car_crash:0.0.3-0.1",
+        image="jaihind213/daily_pipeline_car_crash:0.0.4-0.1",
         cmds=[
             "python3",
             "ingest_job.py",
@@ -81,7 +81,7 @@ with DAG(
         task_id="build_cube",
         name="build-cube-car-crash-job",
         namespace="airflow",
-        image="jaihind213/daily_pipeline_car_crash:0.0.3-0.1",
+        image="jaihind213/daily_pipeline_car_crash:0.0.4-0.1",
         cmds=[
             "python3",
             "cubes_job.py",
