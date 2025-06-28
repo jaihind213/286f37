@@ -45,7 +45,7 @@ with DAG(
         task_id="pull_data",
         name="pull-car-crash-job",
         namespace="airflow",
-        image="jaihind213/daily_pipeline_car_crash:0.0.2-0.1",
+        image="jaihind213/daily_pipeline_car_crash:0.0.3-0.1",
         cmds=[
             "python3",
             "pull_data_job.py",
