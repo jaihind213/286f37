@@ -9,15 +9,13 @@ from airflow.providers.cncf.kubernetes.secret import Secret
 
 # Step 1: Helper method to get environment variables from Kubernetes secrets
 def get_env_from_secret():
-    """
-    Returns a list of Kubernetes Secrets to be mounted as environment variables.
-    """
+    """Returns a list of environment variable sources."""
     return [
-        Secret(
-            deploy_type="env",  # Inject as environment variables
-            deploy_target=None,  # If None, all keys in the secret become env vars
-            secret="car-crash-secret",  # Name of the Kubernetes secret
-        )
+        {
+            'secretRef': {
+                'name': 'car-crash-secret'
+            }
+        }
     ]
 
 
