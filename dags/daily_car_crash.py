@@ -45,7 +45,7 @@ with DAG(
         namespace="airflow",
         image="jaihind213/daily_pipeline_car_crash:0.0.1-0.1",
         cmds=[
-            "python",
+            "python3",
             "/opt/daily_pipeline_car_crash/default_job_config.ini",
             "{{ params.date }}",
         ],
