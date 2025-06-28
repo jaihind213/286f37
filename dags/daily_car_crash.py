@@ -4,6 +4,8 @@ from airflow import DAG
 from airflow.models import Param
 from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
 from airflow.providers.cncf.kubernetes.secret import Secret
+from airflow.providers.cncf.kubernetes.utils.pod_manager import OnFinishAction
+
 
 #test
 
