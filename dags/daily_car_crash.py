@@ -52,7 +52,7 @@ with DAG(
         env_from=get_env_from_secret(),
         get_logs=True,
         is_delete_operator_pod=False,
-        delete_policy_on_failure=False,
+        on_finish_action=OnFinishAction.KEEP_POD,
     )
 
     run_car_crash_pipeline
