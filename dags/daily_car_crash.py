@@ -1,6 +1,6 @@
 from airflow import DAG
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
-from airflow.kubernetes.secret import Secret
+from airflow.providers.cncf.kubernetes.secret import Secret
 from airflow.utils.dates import days_ago
 from airflow.models import Param
 from datetime import datetime
