@@ -43,7 +43,7 @@ with DAG(
         task_id="pull_data",
         name="pull-car-crash-job",
         namespace="airflow",
-        image="jaihind213/daily_pipeline_car_crash:0.0.1-0.1",
+        image="jaihind213/daily_pipeline_car_crash:0.0.2-0.1",
         cmds=[
             "python3",
             "/opt/daily_pipeline_car_crash/default_job_config.ini",
@@ -52,6 +52,7 @@ with DAG(
         env_from=get_env_from_secret(),
         get_logs=True,
         is_delete_operator_pod=False,
+        delete_policy_on_failure=False,
     )
 
     run_car_crash_pipeline
