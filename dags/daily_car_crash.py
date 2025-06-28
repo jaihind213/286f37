@@ -48,7 +48,7 @@ with DAG(
         image="jaihind213/daily_pipeline_car_crash:0.0.2-0.1",
         cmds=[
             "python3",
-            "/opt/daily_pipeline_car_crash/pull_data_job.py"
+            "/opt/daily_pipeline_car_crash/pull_data_job.py",
             "/opt/daily_pipeline_car_crash/default_job_config.ini",
             "{{ params.date }}",
         ],
