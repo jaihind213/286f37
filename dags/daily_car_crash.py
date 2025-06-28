@@ -1,10 +1,11 @@
-from airflow import DAG
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
-from airflow.providers.cncf.kubernetes.secret import Secret
-from airflow.utils.dates import days_ago
-from airflow.models import Param
 from datetime import datetime
 
+from airflow import DAG
+from airflow.models import Param
+from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
+from airflow.providers.cncf.kubernetes.secret import Secret
+
+#test
 
 # Step 1: Helper method to get environment variables from Kubernetes secrets
 def get_env_from_secret():
@@ -13,9 +14,9 @@ def get_env_from_secret():
     """
     return [
         Secret(
-            deploy_type="env",           # Inject as environment variables
-            deploy_target=None,          # If None, all keys in the secret become env vars
-            secret="car-crash-secret",   # Name of the Kubernetes secret
+            deploy_type="env",  # Inject as environment variables
+            deploy_target=None,  # If None, all keys in the secret become env vars
+            secret="car-crash-secret",  # Name of the Kubernetes secret
         )
     ]
 
@@ -48,7 +49,7 @@ with DAG(
         cmds=[
             "python",
             "/opt/daily_pipeline_car_crash/default_job_config.ini",
-            "{{ params.date }}"
+            "{{ params.date }}",
         ],
         env_from=get_env_from_secret(),
         get_logs=True,
