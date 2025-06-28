@@ -4,6 +4,9 @@ from datetime import datetime
 
 
 def say_hello():
+    import time
+    print("before sleep")
+    time.sleep(60)
     print("Hello, world!")
 
 
