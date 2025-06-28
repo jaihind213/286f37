@@ -29,7 +29,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id="daily_pipeline_car_crashes",
+    dag_id="new_daily_pipeline_car_crashes",
     default_args=default_args,
     description="Runs daily car crash pipeline with config and date",
     schedule_interval="@daily",
