@@ -40,7 +40,7 @@ def create_spark_app_file(task_name, main_file, spark_config):
         "spec": {
             "type": "Python",
             "mode": "cluster",
-            "image": "jaihind213/daily_pipeline_car_crash:0.0.3-0.1",
+            "image": "jaihind213/daily_pipeline_car_crash:0.0.4-0.1",
             "imagePullPolicy": "Always",
             "mainApplicationFile": f"local:///opt/daily_pipeline_car_crash/{main_file}",
             "arguments": [
