@@ -7,10 +7,22 @@ from airflow.models import Param
 from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
 from airflow.providers.cncf.kubernetes.hooks.kubernetes import KubernetesHook
 #from airflow.providers.cncf.kubernetes.hooks.kubernetes import KubernetesHook
+from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
+from airflow.providers.cncf.kubernetes.secret import Secret
+from airflow.providers.cncf.kubernetes.utils.pod_manager import OnFinishAction
 from kubernetes import client
 from kubernetes.client.rest import ApiException
 
-
+def get_env_from_secret():
+    """Returns a list of environment variable sources."""
+    return [
+        {
+            'secretRef': {
+                'name': 'car-crash-secret'
+            }
+        }
+    ]
+    
 # Helper function to get config from ConfigMap
 def get_spark_config(config_map_name="spark-config"):
     """Get Spark configuration from ConfigMap"""
@@ -135,6 +147,23 @@ with DAG(
     # Get Spark configuration from ConfigMap
     spark_config = get_spark_config("ingest-job-config-map")
     
+    pull_data = KubernetesPodOperator(
+        task_id="pull_data",
+        name="pull-car-crash-job",
+        namespace="airflow",
+        image=spark_config.get("image", "jaihind213/daily_pipeline_car_crash:0.0.8-0.1"),
+        cmds=[
+            "python3",
+            "pull_data_job.py",
+            "/opt/daily_pipeline_car_crash/default_job_config.ini",
+            "{{ params.date }}",
+        ],
+        env_from=get_env_from_secret(),
+        get_logs=True,
+        is_delete_operator_pod=False,
+        on_finish_action=OnFinishAction.KEEP_POD,
+    )
+    
     # Create application files
     ingest_job_app_file = create_spark_app_file("ingest-job-config-map", "ingest_job.py", spark_config)
     
@@ -149,4 +178,4 @@ with DAG(
     
    
     # Define task dependencies: a > b > c
-    ingest_job
+    pull_data >> ingest_job
