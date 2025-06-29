@@ -17,6 +17,10 @@ def get_spark_config(config_map_name="spark-config"):
         return config_map.data
     except Exception:
         # Fallback defaults if ConfigMap doesn't exist
+        import traceback
+        traceback.print_exc()
+        print("xxxxxxxxxxx")
+        print("xxxxxxxxxxx")
         return {
             "driver_cores": "1",
             "driver_memory": "1g",
