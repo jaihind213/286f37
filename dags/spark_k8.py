@@ -49,6 +49,14 @@ def create_spark_app_file(task_name, main_file, spark_config):
             ],
             "sparkVersion": spark_config.get("spark_version", "3.5.2"),
             "restartPolicy": {"type": "Never"},
+            "sparkConf": {
+                "spark.sql.extensions": "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions",
+                "spark.sql.catalog.spark_catalog": "org.apache.iceberg.spark.SparkSessionCatalog",
+                "spark.jar.packages": "org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.8.1,io.github.jaihind213:spark-set-udaf:spark3.5.2-scala2.13-1.0.1-jdk11,org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.367",
+                "spark.sql.catalog.local": "org.apache.iceberg.spark.SparkCatalog",
+                "spark.sql.catalog.local.type": "hadoop",
+                "spark.sql.catalog.local.warehouse": "file:///opt/daily_pipeline_car_crash/data/iceberg_crashes",
+            },
             "driver": {
                 "cores": int(spark_config.get("driver_cores", "1")),
                 "coreLimit": spark_config.get("driver_core_limit", "1200m"),
