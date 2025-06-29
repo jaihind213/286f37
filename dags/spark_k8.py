@@ -151,7 +151,6 @@ with DAG(
     schedule_interval="@daily",
     start_date=datetime.now(),
     catchup=False,
-    retries=1,
     template_searchpath=["/tmp/dag_templates"],
     params={
         "date": Param("2024-04-20", type="string"),
