@@ -13,6 +13,7 @@ def get_spark_config(config_map_name="spark-config"):
     k8s_hook = KubernetesHook(conn_id="kubernetes_default")
     try:
         config_map = k8s_hook.get_configmap(name=config_map_name, namespace="airflow")
+        print(config_map.data)
         return config_map.data
     except Exception:
         # Fallback defaults if ConfigMap doesn't exist
