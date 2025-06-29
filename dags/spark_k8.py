@@ -1,15 +1,18 @@
 from datetime import datetime
+import tempfile
+import yaml
+import os
 from airflow import DAG
 from airflow.models import Param
 from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
 from airflow.providers.cncf.kubernetes.hooks.kubernetes import KubernetesHook
 
 # Helper function to get config from ConfigMap
-def get_spark_config(app_name):
+def get_spark_config(config_map_name="spark-config"):
     """Get Spark configuration from ConfigMap"""
     k8s_hook = KubernetesHook(conn_id="kubernetes_default")
     try:
-        config_map = k8s_hook.get_configmap(name=app_name, namespace="airflow")
+        config_map = k8s_hook.get_configmap(name=config_map_name, namespace="airflow")
         return config_map.data
     except Exception:
         # Fallback defaults if ConfigMap doesn't exist
@@ -19,11 +22,69 @@ def get_spark_config(app_name):
             "driver_core_limit": "1200m",
             "executor_cores": "2",
             "executor_instances": "1",
-            "executor_memory": "1g",
+            "executor_memory": "2g",
             "spark_version": "3.5.2",
             "java_home": "/opt/java/openjdk"
         }
-#test
+
+# Helper function to create Spark application YAML file
+def create_spark_app_file(task_name, main_file, spark_config):
+    """Create a temporary YAML file for Spark application"""
+    spark_app = {
+        "apiVersion": "sparkoperator.k8s.io/v1beta2",
+        "kind": "SparkApplication",
+        "metadata": {
+            "name": f"{task_name}-{{{{ ds }}}}",
+            "namespace": "airflow"
+        },
+        "spec": {
+            "type": "Python",
+            "mode": "cluster",
+            "image": "jaihind213/daily_pipeline_car_crash:0.0.3-0.1",
+            "imagePullPolicy": "Always",
+            "mainApplicationFile": f"local:///opt/daily_pipeline_car_crash/{main_file}",
+            "arguments": [
+                "/opt/daily_pipeline_car_crash/default_job_config.ini",
+                "{{ params.date }}"
+            ],
+            "sparkVersion": spark_config.get("spark_version", "3.5.2"),
+            "restartPolicy": {"type": "Never"},
+            "driver": {
+                "cores": int(spark_config.get("driver_cores", "1")),
+                "coreLimit": spark_config.get("driver_core_limit", "1200m"),
+                "memory": spark_config.get("driver_memory", "1g"),
+                "serviceAccount": "spark",
+                "env": [
+                    {"name": "JAVA_HOME", "value": spark_config.get("java_home", "/opt/java/openjdk")}
+                ],
+                "envFrom": [
+                    {"secretRef": {"name": "car-crash-secret"}}
+                ]
+            },
+            "executor": {
+                "cores": int(spark_config.get("executor_cores", "2")),
+                "instances": int(spark_config.get("executor_instances", "1")),
+                "memory": spark_config.get("executor_memory", "2g"),
+                "env": [
+                    {"name": "JAVA_HOME", "value": spark_config.get("java_home", "/opt/java/openjdk")}
+                ],
+                "envFrom": [
+                    {"secretRef": {"name": "car-crash-secret"}}
+                ]
+            }
+        }
+    }
+    
+    # Create temporary file
+    temp_dir = "/tmp/spark_apps"
+    os.makedirs(temp_dir, exist_ok=True)
+    temp_file = f"{temp_dir}/{task_name}_spark_app.yaml"
+    
+    with open(temp_file, 'w') as f:
+        yaml.dump(spark_app, f, default_flow_style=False)
+    
+    return temp_file
+
 # Step 1: DAG definition
 default_args = {
     "owner": "airflow",
@@ -45,58 +106,20 @@ with DAG(
 ) as dag:
     
     # Get Spark configuration from ConfigMap
-    spark_config = get_spark_config("ingest-job-config-map")
+    spark_config = get_spark_config()
     
-    # Task B - Process data using Spark
-    process_data = SparkKubernetesOperator(
-        task_id="ingest-job",
+    # Create application files
+    ingest_job_app_file = create_spark_app_file("ingest-job-config-map", "ingest_job.py", spark_config)
+    
+    # Task A - Pull data using Spark
+    ingest_job = SparkKubernetesOperator(
+        task_id="ingest_data",
         namespace="airflow",
-        application_file={
-            "apiVersion": "sparkoperator.k8s.io/v1beta2",
-            "kind": "SparkApplication",
-            "metadata": {"name": "process-data-{{ ds }}", "namespace": "airflow"},
-            "spec": {
-                "type": "Python",
-                "mode": "cluster",
-                "image": "jaihind213/daily_pipeline_car_crash:0.0.4-0.1",
-                "imagePullPolicy": "Always",
-                "mainApplicationFile": "local:///opt/daily_pipeline_car_crash/ingest_job.py",
-                "arguments": [
-                    "/opt/daily_pipeline_car_crash/default_job_config.ini",
-                    "{{ params.date }}"
-                ],
-                "sparkVersion": spark_config.get("spark_version", "3.5.2"),
-                "restartPolicy": {"type": "Never"},
-                "driver": {
-                    "cores": int(spark_config.get("driver_cores", "1")),
-                    "coreLimit": spark_config.get("driver_core_limit", "1200m"),
-                    "memory": spark_config.get("driver_memory", "1g"),
-                    "serviceAccount": "spark",
-                    "env": [
-                        {"name": "JAVA_HOME", "value": spark_config.get("java_home", "/opt/java/openjdk")}
-                    ],
-                    "envFrom": [
-                        {"secretRef": {"name": "car-crash-secret"}}
-                    ]
-                },
-                "executor": {
-                    "cores": int(spark_config.get("executor_cores", "1")),
-                    "instances": int(spark_config.get("executor_instances", "1")),
-                    "memory": spark_config.get("executor_memory", "1g"),
-                    "env": [
-                        {"name": "JAVA_HOME", "value": spark_config.get("java_home", "/opt/java/openjdk")}
-                    ],
-                    "envFrom": [
-                        {"secretRef": {"name": "car-crash-secret"}}
-                    ]
-                }
-            }
-        },
+        application_file=ingest_job_app_file,
         kubernetes_conn_id="kubernetes_default",
         do_xcom_push=True,
     )
     
    
     # Define task dependencies: a > b > c
-    #pull_data >> process_data >> upload_results
-    process_data
+    ingest_job
