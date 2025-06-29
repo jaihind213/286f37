@@ -132,7 +132,7 @@ with DAG(
 ) as dag:
     
     # Get Spark configuration from ConfigMap
-    spark_config = get_spark_config()
+    spark_config = get_spark_config("ingest-job-config-map")
     
     # Create application files
     ingest_job_app_file = create_spark_app_file("ingest-job-config-map", "ingest_job.py", spark_config)
