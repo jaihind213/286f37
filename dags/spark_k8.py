@@ -6,6 +6,10 @@ from airflow import DAG
 from airflow.models import Param
 from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
 from airflow.providers.cncf.kubernetes.hooks.kubernetes import KubernetesHook
+#from airflow.providers.cncf.kubernetes.hooks.kubernetes import KubernetesHook
+from kubernetes import client
+from kubernetes.client.rest import ApiException
+
 
 # Helper function to get config from ConfigMap
 def get_spark_config(config_map_name="spark-config"):
