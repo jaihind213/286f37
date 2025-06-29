@@ -13,6 +13,18 @@ from airflow.providers.cncf.kubernetes.utils.pod_manager import OnFinishAction
 from kubernetes import client
 from kubernetes.client.rest import ApiException
 
+def get_specific_env_from_secret(var_name):
+    """Returns a specific environment variable from secret."""
+    return {
+        'name': var_name,
+        'valueFrom': {
+            'secretKeyRef': {
+                'name': 'car-crash-secret',
+                'key': var_name
+            }
+        }
+    }
+    
 def get_env_from_secret():
     """Returns a list of environment variable sources."""
     return [
@@ -84,7 +96,10 @@ def create_spark_app_file(task_name, main_file, spark_config):
                 "spark.sql.catalog.local.type": "hadoop",
                 "spark.sql.catalog.local.warehouse": "file:///opt/daily_pipeline_car_crash/data/iceberg_crashes",
                 "spark.driver.extraClassPath": "/opt/spark_jars/*",
-                "spark.executor.extraClassPath": "/opt/spark_jars/*"
+                "spark.executor.extraClassPath": "/opt/spark_jars/*",
+                "spark.hadoop.fs.s3a.access.key": get_specific_env_from_secret("S3_ACCESS_KEY"),
+                "spark.hadoop.fs.s3a.secret.key": get_specific_env_from_secret("S3_SECRET_KEY"),
+                "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem"
             },
             "driver": {
                 "cores": int(spark_config.get("driver_cores", "1")),
