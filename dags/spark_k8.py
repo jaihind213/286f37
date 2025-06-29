@@ -40,7 +40,7 @@ def create_spark_app_file(task_name, main_file, spark_config):
         "spec": {
             "type": "Python",
             "mode": "cluster",
-            "image": "jaihind213/daily_pipeline_car_crash:0.0.4-0.1",
+            "image": spark_config.get("image", "jaihind213/daily_pipeline_car_crash:0.0.5-0.1"),
             "imagePullPolicy": "Always",
             "mainApplicationFile": f"local:///opt/daily_pipeline_car_crash/{main_file}",
             "arguments": [
@@ -56,6 +56,8 @@ def create_spark_app_file(task_name, main_file, spark_config):
                 "spark.sql.catalog.local": "org.apache.iceberg.spark.SparkCatalog",
                 "spark.sql.catalog.local.type": "hadoop",
                 "spark.sql.catalog.local.warehouse": "file:///opt/daily_pipeline_car_crash/data/iceberg_crashes",
+                "spark.driver.extraClassPath": "/opt/spark_jars/*",
+                "spark.executor.extraClassPath": "/opt/spark_jars/*"
             },
             "driver": {
                 "cores": int(spark_config.get("driver_cores", "1")),
