@@ -76,7 +76,7 @@ def create_spark_app_file(task_name, main_file, spark_config):
     }
     
     # Create temporary file
-    temp_dir = "/tmp/spark_apps"
+    temp_dir = "/tmp"
     os.makedirs(temp_dir, exist_ok=True)
     temp_file = f"{temp_dir}/{task_name}_spark_app.yaml"
     
