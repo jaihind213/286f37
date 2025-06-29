@@ -76,14 +76,14 @@ def create_spark_app_file(task_name, main_file, spark_config):
     }
     
     # Create temporary file
-    temp_dir = "/tmp"
-    os.makedirs(temp_dir, exist_ok=True)
-    temp_file = f"{temp_dir}/{task_name}_spark_app.yaml"
+    templates_dir = "/opt/airflow/dags/templates"
+    os.makedirs(templates_dir, exist_ok=True)
+    template_file = os.path.join(templates_dir, f"{task_name}_spark_app.yaml")
     
-    with open(temp_file, 'w') as f:
+    with open(template_file, 'w') as f:
         yaml.dump(spark_app, f, default_flow_style=False)
     
-    return temp_file
+    return f"{task_name}_spark_app.yaml"  # Return just
 
 # Step 1: DAG definition
 default_args = {
@@ -99,6 +99,7 @@ with DAG(
     schedule_interval="@daily",
     start_date=datetime(2024, 4, 20),
     catchup=False,
+    template_searchpath=["/opt/airflow/dags/templates"],
     params={
         "date": Param("2024-04-20", type="string"),
     },
