@@ -128,7 +128,7 @@ with DAG(
         namespace="airflow",
         application_file=ingest_job_app_file,
         kubernetes_conn_id="kubernetes_default",
-        do_xcom_push=True,
+        do_xcom_push=False,
     )
     
    
