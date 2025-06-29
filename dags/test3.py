@@ -110,7 +110,21 @@ def create_spark_app_file(task_name, main_file, spark_config, secret_name="car-c
                 ],
                 "envFrom": [
                     {"secretRef": {"name": secret_name}}
-                ]
+                ],"volumes": [
+                {
+                    "name": "config-volume",
+                    "configMap": {
+                        "name": "job-config-map"
+                    }
+                }
+            ],
+            "volumeMounts": [
+                {
+                    "name": "config-volume",
+                    "mountPath": "/opt/daily_pipeline_car_crash/config",
+                    "readOnly": True
+                }
+            ]
             },
             "executor": {
                 "cores": int(spark_config.get("executor_cores", "2")),
@@ -121,6 +135,21 @@ def create_spark_app_file(task_name, main_file, spark_config, secret_name="car-c
                 ],
                 "envFrom": [
                     {"secretRef": {"name": secret_name}}
+                ],
+                "volumes": [
+                    {
+                        "name": "config-volume",
+                        "configMap": {
+                            "name": "job-config-map"
+                        }
+                    }
+                ],
+                "volumeMounts": [
+                    {
+                        "name": "config-volume",
+                        "mountPath": "/opt/daily_pipeline_car_crash/config",
+                        "readOnly": True
+                    }
                 ]
             }
         }
