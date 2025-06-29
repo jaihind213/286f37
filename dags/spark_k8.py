@@ -12,7 +12,6 @@ def get_spark_config(config_map_name="spark-config"):
     """Get Spark configuration from ConfigMap"""
     k8s_hook = KubernetesHook(conn_id="kubernetes_default")
     try:
-        a
         api_client = k8s_hook.get_conn()
         v1 = client.CoreV1Api(api_client)
         
