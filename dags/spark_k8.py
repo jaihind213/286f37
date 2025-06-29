@@ -107,7 +107,7 @@ with DAG(
     default_args=default_args,
     description="Runs daily car crash pipeline with config and date using Spark on Kubernetes",
     schedule_interval="@daily",
-    start_date=datetime.now()
+    start_date=datetime.now(),
     catchup=False,
     template_searchpath=["/tmp/dag_templates"],
     params={
