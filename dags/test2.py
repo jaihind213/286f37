@@ -95,8 +95,8 @@ def create_spark_app_file(task_name, main_file, spark_config, secret_name="car-c
                 "spark.sql.catalog.local.warehouse": "file:///opt/daily_pipeline_car_crash/data/iceberg_crashes",
                 "spark.driver.extraClassPath": "/opt/spark_jars/*",
                 "spark.executor.extraClassPath": "/opt/spark_jars/*",
-                "spark.hadoop.fs.s3a.access.key": get_specific_env_from_secret("S3_ACCESS_KEY", secret_name),
-                "spark.hadoop.fs.s3a.secret.key": get_specific_env_from_secret("S3_SECRET_KEY", secret_name),
+                #"spark.hadoop.fs.s3a.access.key": get_specific_env_from_secret("S3_ACCESS_KEY", secret_name),
+                #"spark.hadoop.fs.s3a.secret.key": get_specific_env_from_secret("S3_SECRET_KEY", secret_name),
                 "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem"
             },
             "driver": {
@@ -144,7 +144,7 @@ default_args = {
 }
 
 with DAG(
-        dag_id="test2",
+        dag_id="test1",
         default_args=default_args,
         description="Runs daily car crash pipeline with config and date using Spark on Kubernetes",
         schedule_interval="@daily",
