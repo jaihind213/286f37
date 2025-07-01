@@ -6,6 +6,9 @@ from airflow.models import Param
 from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
 from airflow.providers.cncf.kubernetes.utils.pod_manager import OnFinishAction
 from kubernetes.client import models as k8s
+from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import (
+    SparkKubernetesOperator,
+)
 import dag_util as du
 
 # Step 1: DAG definition
@@ -70,29 +73,29 @@ with DAG(
         startup_timeout_seconds=180,
     )
 
-    # # # Create application files
-    # ingest_job_main_file = "local:///opt/daily_pipeline_car_crash/ingest_job.py"
-    # ingest_job_args = [
-    #     "/opt/daily_pipeline_car_crash/config/default_job_config.ini",
-    #     "{{ params.date }}",
-    # ]
-    # ingest_job_spark_config = get_spark_config("ingest-job-config-map")
-    # ingest_job_app_file = du.create_py_spark_operator_app_file("ingest_iceberg",
-    #                                                            ingest_job_main_file,
-    #                                                            ingest_job_args,
-    #                                                            ingest_job_spark_config,
-    #                                                            image_tag,
-    #                                                            "car-crash-secret",
-    #                                                            "ingest-job-config-map",
-    #                                                            "/opt/daily_pipeline_car_crash/config")
-    # ingest_job = SparkKubernetesOperator(
-    #     task_id="ingest_iceberg",
-    #     namespace="airflow",
-    #     application_file=ingest_job_app_file,
-    #     kubernetes_conn_id="kubernetes_default",
-    #     do_xcom_push=False,
-    # )
+    # # Create application files
+    ingest_job_main_file = "local:///opt/daily_pipeline_car_crash/ingest_job.py"
+    ingest_job_args = [
+        "/opt/daily_pipeline_car_crash/config/default_job_config.ini",
+        "{{ params.date }}",
+    ]
+    ingest_job_spark_config = get_spark_config("ingest-job-config-map")
+    ingest_job_app_file = du.create_py_spark_operator_app_file("ingest_iceberg",
+                                                               ingest_job_main_file,
+                                                               ingest_job_args,
+                                                               ingest_job_spark_config,
+                                                               image_tag,
+                                                               "car-crash-secret",
+                                                               "ingest-job-config-map",
+                                                               "/opt/daily_pipeline_car_crash/config")
+    ingest_job = SparkKubernetesOperator(
+        task_id="ingest_iceberg",
+        namespace="airflow",
+        application_file=ingest_job_app_file,
+        kubernetes_conn_id="kubernetes_default",
+        do_xcom_push=False,
+    )
 
-    pull_data
-    #pull_data >> ingest_job
+    #pull_data
+    pull_data >> ingest_job
 
