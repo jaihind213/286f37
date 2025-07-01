@@ -162,7 +162,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id="test_crash_2",
+    dag_id="test_crash_21",
     default_args=default_args,
     description="Runs daily car crash pipeline with config and date using Spark on Kubernetes",
     schedule_interval="@daily",
