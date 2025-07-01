@@ -227,7 +227,7 @@ with DAG(
                                                                ingest_job_args,
                                                                ingest_job_spark_config,
                                                                image_tag,
-                                                               "car-crash-secret"
+                                                               "car-crash-secret",
                                                                "ingest-job-config-map",
                                                                "/opt/daily_pipeline_car_crash/config")
     ingest_job = SparkKubernetesOperator(
