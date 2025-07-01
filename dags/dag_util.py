@@ -49,12 +49,12 @@ def create_py_spark_operator_app_file(
                 ],
                 "envFrom": [{"secretRef": {"name": secret_holding_env_vars}}],
                 "volumes": [
-                    {"name": "config-volume", "configMap": {"name": app_config_map_name}}
+                    {"name": "config-volume", "configMap": {"name": "common-config-map"}},
                 ],
                 "volumeMounts": [
                     {
                         "name": "config-volume",
-                        "mountPath": app_config_map_mount_path,
+                        "mountPath": "/opt/daily_pipeline_car_crash/config/",
                         "readOnly": True,
                     }
                 ],
@@ -74,12 +74,12 @@ def create_py_spark_operator_app_file(
                 ],
                 "envFrom": [{"secretRef": {"name": secret_holding_env_vars}}],
                 "volumes": [
-                    {"name": "config-volume", "configMap": {"name": app_config_map_name}}
+                    {"name": "config-volume", "configMap": {"name": "common-config-map"}}
                 ],
                 "volumeMounts": [
                     {
                         "name": "config-volume",
-                        "mountPath": app_config_map_mount_path,
+                        "mountPath": "/opt/daily_pipeline_car_crash/config/",
                         "readOnly": True,
                     }
                 ],
@@ -87,7 +87,7 @@ def create_py_spark_operator_app_file(
         },
     }
     logging.info("Creating Spark application YAML file for task: %s", task_name)
-    logging.error("Spark application configuration: %s", spark_app)
+    logging.info("Spark application configuration: %s", spark_app)
 
     # Create temporary file
     templates_dir = "/tmp/dag_templates"
