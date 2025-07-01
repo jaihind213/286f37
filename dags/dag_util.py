@@ -33,6 +33,9 @@ def create_py_spark_operator_app_file(
                 "spark.driver.extraClassPath": "/opt/spark_jars/",
                 "spark.executor.extraClassPath": "/opt/spark_jars/",
             },
+            "volumes": [
+                {"name": "config-volume", "configMap": {"name": "common-config-map"}},
+            ],
             "driver": {
                 "cores": int(spark_config.get("driver_cores", "1")),
                 "coreLimit": spark_config.get("driver_core_limit", "1200m"),
@@ -48,9 +51,6 @@ def create_py_spark_operator_app_file(
                     }
                 ],
                 "envFrom": [{"secretRef": {"name": secret_holding_env_vars}}],
-                "volumes": [
-                    {"name": "config-volume", "configMap": {"name": "common-config-map"}},
-                ],
                 "volumeMounts": [
                     {
                         "name": "config-volume",
@@ -73,9 +73,6 @@ def create_py_spark_operator_app_file(
                     }
                 ],
                 "envFrom": [{"secretRef": {"name": secret_holding_env_vars}}],
-                "volumes": [
-                    {"name": "config-volume", "configMap": {"name": "common-config-map"}}
-                ],
                 "volumeMounts": [
                     {
                         "name": "config-volume",
