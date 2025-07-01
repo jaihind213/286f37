@@ -87,7 +87,7 @@ def create_py_spark_operator_app_file(
         },
     }
     logging.info("Creating Spark application YAML file for task: %s", task_name)
-    logging.info("Spark application configuration: %s", spark_app)
+    logging.error("Spark application configuration: %s", spark_app)
 
     # Create temporary file
     templates_dir = "/tmp/dag_templates"
