@@ -178,7 +178,7 @@ with DAG(
     common_config_volume = k8s.V1Volume(
         name="common-config-volume",
         config_map=k8s.V1ConfigMapVolumeSource(
-            name=" common-config-map"  # Replace with your ConfigMap name
+            name="common-config-map"  # Replace with your ConfigMap name
         ),
     )
 
