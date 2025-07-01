@@ -6,6 +6,9 @@ import yaml
 from airflow.providers.cncf.kubernetes.hooks.kubernetes import KubernetesHook
 from kubernetes import client
 
+def get_env_from_secret(secret_name):
+    """Returns a list of environment variable sources."""
+    return [{"secretRef": {"name": secret_name}}]
 
 # Helper function to create Spark application YAML file
 def create_py_spark_operator_app_file(
