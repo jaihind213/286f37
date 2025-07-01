@@ -47,7 +47,7 @@ def create_py_spark_operator_app_file(
                         "value": spark_config.get("java_home", "/opt/java/openjdk"),
                     }, {
                         "name": "SPARK_HOME",
-                        "value": spark_config.get("java_home", "/opt/spark"),
+                        "value": spark_config.get("spark_home", "/opt/spark"),
                     }
                 ],
                 "envFrom": [{"secretRef": {"name": secret_holding_env_vars}}],
@@ -69,7 +69,7 @@ def create_py_spark_operator_app_file(
                         "value": spark_config.get("java_home", "/opt/java/openjdk"),
                     }, {
                         "name": "SPARK_HOME",
-                        "value": spark_config.get("java_home", "/opt/spark"),
+                        "value": spark_config.get("spark_home", "/opt/spark"),
                     }
                 ],
                 "envFrom": [{"secretRef": {"name": secret_holding_env_vars}}],
