@@ -79,7 +79,7 @@ with DAG(
         "/opt/daily_pipeline_car_crash/config/default_job_config.ini",
         "{{ params.date }}",
     ]
-    ingest_job_spark_config = get_spark_config("ingest-job-config-map")
+    ingest_job_spark_config = du.get_config_map_data("ingest-job-config-map")
     ingest_job_app_file = du.create_py_spark_operator_app_file("ingest_iceberg",
                                                                ingest_job_main_file,
                                                                ingest_job_args,
