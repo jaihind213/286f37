@@ -48,12 +48,16 @@ def create_py_spark_operator_app_file(
                     }
                 ],
                 "envFrom": [{"secretRef": {"name": secret_holding_env_vars}}],
+                "volumes": [
+                    {"name": "config-volume", "configMap": {"name": app_config_map_name}}
+                ],
                 "volumeMounts": [
                     {
-                        "name": "car-crash-config-volume",
-                        "mountPath": app_config_map_mount_path
+                        "name": "config-volume",
+                        "mountPath": app_config_map_mount_path,
+                        "readOnly": True,
                     }
-                ]
+                ],
             },
             "executor": {
                 "cores": int(spark_config.get("executor_cores", "2")),
@@ -69,21 +73,17 @@ def create_py_spark_operator_app_file(
                     }
                 ],
                 "envFrom": [{"secretRef": {"name": secret_holding_env_vars}}],
+                "volumes": [
+                    {"name": "config-volume", "configMap": {"name": app_config_map_name}}
+                ],
                 "volumeMounts": [
                     {
-                        "name": "car-crash-config-volume",
-                        "mountPath": app_config_map_mount_path
+                        "name": "config-volume",
+                        "mountPath": app_config_map_mount_path,
+                        "readOnly": True,
                     }
-                ]
+                ],
             },
-            "volumes": [
-                {
-                    "name": "car-crash-config-volume",
-                    "configMap": {
-                        "name": app_config_map_name
-                    }
-                }
-            ],
         },
     }
     logging.info("Creating Spark application YAML file for task: %s", task_name)
