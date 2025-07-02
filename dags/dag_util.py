@@ -30,8 +30,8 @@ def create_py_spark_operator_app_file(
             "restartPolicy": {"type": "Never"},
             "sparkConf": {
                 #put any common stuff here. rest comes form app config.
-                "spark.driver.extraClassPath": "/opt/spark_jars/",
-                "spark.executor.extraClassPath": "/opt/spark_jars/",
+                "spark.driver.extraClassPath": "/opt/spark_jars/*",
+                "spark.executor.extraClassPath": "/opt/spark_jars/*",
             },
             "volumes": [
                 {"name": "config-volume", "configMap": {"name": "common-config-map"}},
