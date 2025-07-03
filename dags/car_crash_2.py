@@ -120,4 +120,4 @@ with DAG(
     )
 
     #pull_data
-    pull_data >> ingest_job >> cubes_job
+    cubes_job
