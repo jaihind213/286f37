@@ -87,7 +87,7 @@ with DAG(
                                                                image_tag,
                                                                "car-crash-secret",
                                                                "common-config-map",
-    #                                                            "/opt/daily_pipeline_car_crash/config")
+                                                               "/opt/daily_pipeline_car_crash/config")
     # ingest_job = SparkKubernetesOperator(
     #     task_id="ingest_iceberg",
     #     namespace="airflow",
