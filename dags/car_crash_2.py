@@ -53,25 +53,25 @@ with DAG(
     )
     logging.info("image being used: %s", image_tag)
 
-    pull_data = KubernetesPodOperator(
-        task_id="pull_data",
-        name="pull-data",
-        namespace="airflow",
-        image=image_tag,
-        cmds=[
-            "python3",
-            "pull_data_job.py",
-            "/opt/daily_pipeline_car_crash/config/default_job_config.ini",
-            "{{ params.date }}",
-        ],
-        env_from=du.get_env_from_secret("car-crash-secret"),
-        get_logs=True,
-        is_delete_operator_pod=False,
-        on_finish_action=OnFinishAction.KEEP_POD,
-        volumes=[common_config_volume],
-        volume_mounts=[common_config_volume_mount],
-        startup_timeout_seconds=180,
-    )
+    # pull_data = KubernetesPodOperator(
+    #     task_id="pull_data",
+    #     name="pull-data",
+    #     namespace="airflow",
+    #     image=image_tag,
+    #     cmds=[
+    #         "python3",
+    #         "pull_data_job.py",
+    #         "/opt/daily_pipeline_car_crash/config/default_job_config.ini",
+    #         "{{ params.date }}",
+    #     ],
+    #     env_from=du.get_env_from_secret("car-crash-secret"),
+    #     get_logs=True,
+    #     is_delete_operator_pod=False,
+    #     on_finish_action=OnFinishAction.KEEP_POD,
+    #     volumes=[common_config_volume],
+    #     volume_mounts=[common_config_volume_mount],
+    #     startup_timeout_seconds=180,
+    # )
 
     # # Create application files
     ingest_job_main_file = "local:///opt/daily_pipeline_car_crash/ingest_job.py"
@@ -87,14 +87,14 @@ with DAG(
                                                                image_tag,
                                                                "car-crash-secret",
                                                                "common-config-map",
-                                                               "/opt/daily_pipeline_car_crash/config")
-    ingest_job = SparkKubernetesOperator(
-        task_id="ingest_iceberg",
-        namespace="airflow",
-        application_file=ingest_job_app_file,
-        kubernetes_conn_id="kubernetes_default",
-        do_xcom_push=False,
-    )
+    #                                                            "/opt/daily_pipeline_car_crash/config")
+    # ingest_job = SparkKubernetesOperator(
+    #     task_id="ingest_iceberg",
+    #     namespace="airflow",
+    #     application_file=ingest_job_app_file,
+    #     kubernetes_conn_id="kubernetes_default",
+    #     do_xcom_push=False,
+    # )
 
     # # Create application files
     cubes_job_main_file = "local:///opt/daily_pipeline_car_crash/cubes_job.py"
